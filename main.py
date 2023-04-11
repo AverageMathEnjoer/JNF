@@ -16,32 +16,13 @@ def linear_independence(vectors):
         return True
 
 
-
-def directly_in_basis(v, basis):
-    return any(collinear(v, t) for t in basis)
-
-
-def collinear(v, w):
-    if len(v) != len(w):
-        return False
-    u = v / w
-    const = np.nan
-    for i in u:
-        if np.isnan(const) and not np.isnan(i):
-            const = i
-        elif i != const and not np.isnan(i):
-            return False
-    return True
-
-
-
-def new_find_all_basis(matrix):
+def new_find_all_basis(matrix, multiplicity):
     M = np.eye(len(matrix))
     basises = []
     M = np.dot(M, matrix)
     prev = find_basis_u(M)
     basises.append(prev.copy())
-    while np.linalg.matrix_rank(M) != 0:
+    while len(M) - np.linalg.matrix_rank(M) < multiplicity:
         M = np.dot(M, matrix)
         cur = find_basis_u(M)
         independ_b = []
@@ -60,15 +41,18 @@ MyVar = np.array([[-7.0, 0, 0, 1, 4, 1],
                      [0, 0, 0, -7, 0, 0],
                      [0, 0, 0, 0, -7, 0],
                      [0, 0, 0, 0, 0, -7]])
-# print(count_phi(MyVar, -7))
-print(new_find_all_basis(count_phi(MyVar, -7)))
-# find_all_basis(count_phi(MyVar, -7))
-# print(collinear(np.array([0., 1., 0., 0., 0., 0.]), np.array([ 0.,  1., -0., -0., -0.,  0.])))
-w1 = np.array([0., 0., 0., 0., 0., 1.])
-w1 = np.dot(count_phi(MyVar, -7), w1)
-print(w1)
-w1 = np.dot(count_phi(MyVar, -7), w1)
-print(w1)
+
+find_all_basis(count_phi(MyVar, -7), 6)
+new_find_all_basis(count_phi(MyVar, -7), 6)
+# # print(count_phi(MyVar, -7))
+# print(new_find_all_basis(count_phi(MyVar, -7)))
+# # find_all_basis(count_phi(MyVar, -7))
+# # print(collinear(np.array([0., 1., 0., 0., 0., 0.]), np.array([ 0.,  1., -0., -0., -0.,  0.])))
+# w1 = np.array([0., 0., 0., 0., 0., 1.])
+# w1 = np.dot(count_phi(MyVar, -7), w1)
+# print(w1)
+# w1 = np.dot(count_phi(MyVar, -7), w1)
+# print(w1)
 
 # w2 = np.array([0., 0., 0., 1., 0., 0.])
 # w2 = np.dot(count_phi(MyVar, -7), w2)

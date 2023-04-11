@@ -74,9 +74,9 @@ def count_phi(psi, gamma):
     return psi - np.eye(len(psi)) * gamma
 
 
-def find_all_basis(matrix):
+def find_all_basis(matrix, multiplicity):
     B = np.eye(len(matrix))
-    while np.linalg.matrix_rank(B) != 0:
+    while len(B) - np.linalg.matrix_rank(B) < multiplicity:
         B = np.dot(B, matrix)
         print("Текущая матрица:")
         print(B)
