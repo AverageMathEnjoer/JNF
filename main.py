@@ -1,96 +1,95 @@
 import numpy as np
+from GausFunction import *
 
 
-def line_swap(matrix, a, b):
-    temp = matrix[a].copy()
-    matrix[a] = matrix[b]
-    matrix[b] = temp
-    return matrix
-
-
-def ledger(matrix):
-    matrix = matrix.astype(np.float64)
-    m = matrix.shape[0]
-    n = matrix.shape[1]
-    if m == 0 or n == 0:
-        return matrix
-    if m == 1 and n == 1:
-        if matrix[0, 0] != 0:
-            matrix = matrix / matrix[0, 0]
-    else:
-        first_non_zero = -1
-        i = 0
-        while first_non_zero == -1 and i < m:
-            if matrix[i, 0] != 0:
-                first_non_zero = i
-            i += 1
-        if first_non_zero == -1:
-            matrix[0:m, 1:n] = ledger(matrix[0:m, 1:n])
-        else:
-            matrix = line_swap(matrix, 0, first_non_zero)
-            matrix[0] = matrix[0] / matrix[0, 0]
-            for k in range(1, m):
-                matrix[k] = matrix[k] - (matrix[k, 0] * matrix[0])
-            matrix[1:m, 0:n] = ledger(matrix[1:m, 0:n])
-    return matrix
-
-
-def find_basis_u(matrix):
-    m = matrix.shape[0]
-    n = matrix.shape[1]
-    not_main = []
-    u = []
-    main = []
-    matrix = ledger(matrix)
-    cur_line = 0
+def linear_independence(vectors):
+    B = np.array(vectors).astype(np.float64)
+    m = B.shape[0]
+    n = B.shape[1]
+    if m > n:
+        return False
+    B = ladder(B)
     for i in range(m):
-        if matrix[cur_line, i] != 0:
-            not_main.append((i, cur_line))
-            cur_line += 1
-        else:
-            main.append(i)
-    not_main.reverse()
-    for i in main:
-        v = np.array([0, 0, 0, 0, 0, 0])
-        v[i] = 1
-        u.append(count_v(matrix, v, not_main))
-    return u
+        if all(t == 0 for t in B[i]):
+            return False
+    else:
+        return True
 
 
-def count_x(line, v, number):
-    a = line * v
-    a = a[number+1:len(a)]
-    return -a.sum() / line[number]
+
+def directly_in_basis(v, basis):
+    return any(collinear(v, t) for t in basis)
 
 
-def count_v(matrix, v, not_main):
-    v = v.astype(np.float64)
-    for i in range(len(not_main)):
-        v[not_main[i][0]] = count_x(matrix[not_main[i][1]], v, not_main[i][0])
-    return v
+def collinear(v, w):
+    if len(v) != len(w):
+        return False
+    u = v / w
+    const = np.nan
+    for i in u:
+        if np.isnan(const) and not np.isnan(i):
+            const = i
+        elif i != const and not np.isnan(i):
+            return False
+    return True
 
 
-def count_phi(psi, gamma):
-    return psi - np.eye(len(psi)) * gamma
 
+def new_find_all_basis(matrix):
+    M = np.eye(len(matrix))
+    basises = []
+    M = np.dot(M, matrix)
+    prev = find_basis_u(M)
+    basises.append(prev.copy())
+    while np.linalg.matrix_rank(M) != 0:
+        M = np.dot(M, matrix)
+        cur = find_basis_u(M)
+        independ_b = []
+        for i in cur:
+            if linear_independence(prev + [i]):
+                independ_b.append(i)
+                prev.append(i)
+        basises.append(independ_b.copy())
+        prev = cur.copy()
+    for i in basises:
+        print(i)
 
-def find_all_basis(matrix):
-    B = np.eye(len(matrix))
-    while np.linalg.matrix_rank(B) != 0:
-        B = np.dot(B, matrix)
-        print("Текущая матрица:")
-        print(B)
-        print("Кол-во векторов(m - rk(B)):")
-        print(len(B) - np.linalg.matrix_rank(B))
-        print("Векторы:", find_basis_u(B))
+MyVar = np.array([[-7.0, 0, 0, 1, 4, 1],
+                     [0, -7, -4, 0, 1, 0],
+                     [0, 0, -7, 0, 1, 2],
+                     [0, 0, 0, -7, 0, 0],
+                     [0, 0, 0, 0, -7, 0],
+                     [0, 0, 0, 0, 0, -7]])
+# print(count_phi(MyVar, -7))
+print(new_find_all_basis(count_phi(MyVar, -7)))
+# find_all_basis(count_phi(MyVar, -7))
+# print(collinear(np.array([0., 1., 0., 0., 0., 0.]), np.array([ 0.,  1., -0., -0., -0.,  0.])))
+w1 = np.array([0., 0., 0., 0., 0., 1.])
+w1 = np.dot(count_phi(MyVar, -7), w1)
+print(w1)
+w1 = np.dot(count_phi(MyVar, -7), w1)
+print(w1)
 
-
-A = np.array([[2.0, -2, 0, 0, 0, 1],
-               [0, 2, 0, 2, -1, 0],
-               [0, 0, 2, -4, 2, 0],
-               [0, 0, 0, 2, 0, 0],
-               [0, 0, 0, 0, 2, 1],
-               [0, 0, 0, 0, 0, 2]])
-w, v = np.linalg.eigh(A)
-find_all_basis(count_phi(A, 2))
+# w2 = np.array([0., 0., 0., 1., 0., 0.])
+# w2 = np.dot(count_phi(MyVar, -7), w2)
+# print(w2)
+#
+# S = np.array([[ 0.,  -4.,   0.,   0.,   0.,   0. ],
+# [ 4.,   1.,   1.,   0.,   0.,   0. ],
+# [ 0.,   0.,   0.,   0.,   1.,   0. ],
+# [ 1.,   0.,   0.,   0.,   0.,   0. ],
+# [ 0.,   0.,   0.,   1.,   0.,   0. ],
+# [ 0.,   0.,  -0.5,  7.,  -2.,   1. ]])
+# S = S.T
+# print(S)
+# S_1 = np.linalg.inv(S)
+# print(S_1)
+# J = np.array([[-7, 1, 0, 0, 0, 0],
+#               [0, -7, 1, 0, 0, 0],
+#                [0, 0, -7, 0, 0, 0],
+#                [0, 0, 0, -7, 1, 0],
+#                [0, 0, 0, 0, -7, 0],
+#                [0, 0, 0, 0, 0, -7]])
+# R = np.dot(np.dot(S, J), S_1)
+# print(R)
 
