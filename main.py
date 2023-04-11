@@ -2,6 +2,22 @@ import numpy as np
 from GausFunction import *
 
 
+def spec_with_multiple(phi):
+    gammas, v = np.linalg.eigh(phi)
+    counter = 1
+    spec = []
+    cur = gammas[0]
+    for i in np.arange(1, len(gammas)):
+        if cur != gammas[i]:
+            spec.append((gammas[i - 1], counter))
+            cur = gammas[i]
+            counter = 1
+        else:
+            counter += 1
+    spec.append((gammas[i - 1], counter))
+    return spec
+
+
 def linear_independence(vectors):
     B = np.array(vectors).astype(np.float64)
     m = B.shape[0]
@@ -34,16 +50,19 @@ def new_find_all_basis(matrix, multiplicity):
         prev = cur.copy()
     for i in basises:
         print(i)
+    return basises
+
 
 MyVar = np.array([[-7.0, 0, 0, 1, 4, 1],
                      [0, -7, -4, 0, 1, 0],
-                     [0, 0, -7, 0, 1, 2],
-                     [0, 0, 0, -7, 0, 0],
-                     [0, 0, 0, 0, -7, 0],
+                     [0, 0, -1, 0, 1, 2],
+                     [0, 0, 0, -1, 0, 0],
+                     [0, 0, 0, 0, -3, 0],
                      [0, 0, 0, 0, 0, -7]])
 
-find_all_basis(count_phi(MyVar, -7), 6)
-new_find_all_basis(count_phi(MyVar, -7), 6)
+find_all_basis(count_phi(MyVar, -7), 3)
+new_find_all_basis(count_phi(MyVar, -7), 3)
+print(spec_with_multiple(MyVar))
 # # print(count_phi(MyVar, -7))
 # print(new_find_all_basis(count_phi(MyVar, -7)))
 # # find_all_basis(count_phi(MyVar, -7))
