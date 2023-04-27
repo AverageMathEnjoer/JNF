@@ -53,46 +53,8 @@ def new_find_all_basis(matrix, multiplicity):
     return basises
 
 
-MyVar = np.array([[-7.0, 0, 0, 1, 4, 1],
-                     [0, -7, -4, 0, 1, 0],
-                     [0, 0, -1, 0, 1, 2],
-                     [0, 0, 0, -1, 0, 0],
-                     [0, 0, 0, 0, -3, 0],
-                     [0, 0, 0, 0, 0, -7]])
-
-find_all_basis(count_phi(MyVar, -7), 3)
-new_find_all_basis(count_phi(MyVar, -7), 3)
-print(spec_with_multiple(MyVar))
-# # print(count_phi(MyVar, -7))
-# print(new_find_all_basis(count_phi(MyVar, -7)))
-# # find_all_basis(count_phi(MyVar, -7))
-# # print(collinear(np.array([0., 1., 0., 0., 0., 0.]), np.array([ 0.,  1., -0., -0., -0.,  0.])))
-# w1 = np.array([0., 0., 0., 0., 0., 1.])
-# w1 = np.dot(count_phi(MyVar, -7), w1)
-# print(w1)
-# w1 = np.dot(count_phi(MyVar, -7), w1)
-# print(w1)
-
-# w2 = np.array([0., 0., 0., 1., 0., 0.])
-# w2 = np.dot(count_phi(MyVar, -7), w2)
-# print(w2)
-#
-# S = np.array([[ 0.,  -4.,   0.,   0.,   0.,   0. ],
-# [ 4.,   1.,   1.,   0.,   0.,   0. ],
-# [ 0.,   0.,   0.,   0.,   1.,   0. ],
-# [ 1.,   0.,   0.,   0.,   0.,   0. ],
-# [ 0.,   0.,   0.,   1.,   0.,   0. ],
-# [ 0.,   0.,  -0.5,  7.,  -2.,   1. ]])
-# S = S.T
-# print(S)
-# S_1 = np.linalg.inv(S)
-# print(S_1)
-# J = np.array([[-7, 1, 0, 0, 0, 0],
-#               [0, -7, 1, 0, 0, 0],
-#                [0, 0, -7, 0, 0, 0],
-#                [0, 0, 0, -7, 1, 0],
-#                [0, 0, 0, 0, -7, 0],
-#                [0, 0, 0, 0, 0, -7]])
-# R = np.dot(np.dot(S, J), S_1)
-# print(R)
+A = np.array([[3, -1, -1, 1],
+      [1, 2, -1, -1]])
+print(ladder(A))
+print(find_basis_u(A))
 

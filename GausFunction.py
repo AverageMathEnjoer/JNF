@@ -43,7 +43,10 @@ def find_basis_u(matrix):
     main = []
     matrix = ladder(matrix)
     cur_line = 0
-    for i in range(m):
+    for i in range(n):
+        if cur_line >= m:
+            main += [j for j in range(i, n)]
+            break
         if matrix[cur_line, i] != 0:
             not_main.append((i, cur_line))
             cur_line += 1
@@ -51,7 +54,7 @@ def find_basis_u(matrix):
             main.append(i)
     not_main.reverse()
     for i in main:
-        v = np.array([0, 0, 0, 0, 0, 0])
+        v = np.zeros(n)
         v[i] = 1
         u.append(count_v(matrix, v, not_main))
     return u
