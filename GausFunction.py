@@ -57,7 +57,7 @@ def find_basis_u(matrix):
         v = np.zeros(n)
         v[i] = 1
         u.append(count_v(matrix, v, not_main))
-    return u
+    return u                                                        #list необходим т.к np.array не содержит append
 
 
 def count_x(line, v, number):

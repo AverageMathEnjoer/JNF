@@ -1,4 +1,3 @@
-import numpy as np
 from GausFunction import *
 
 
@@ -14,7 +13,7 @@ def spec_with_multiple(phi):
             counter = 1
         else:
             counter += 1
-    spec.append((gammas[i - 1], counter))
+    spec.append((gammas[len(gammas) - 1], counter))
     return spec
 
 
@@ -41,20 +40,39 @@ def new_find_all_basis(matrix, multiplicity):
     while len(M) - np.linalg.matrix_rank(M) < multiplicity:
         M = np.dot(M, matrix)
         cur = find_basis_u(M)
-        independ_b = []
+        independent_b = []
         for i in cur:
             if linear_independence(prev + [i]):
-                independ_b.append(i)
+                independent_b.append(i)
                 prev.append(i)
-        basises.append(independ_b.copy())
+        basises.append(independent_b.copy())
         prev = cur.copy()
-    for i in basises:
-        print(i)
     return basises
 
 
+def orthogonalize(basis):
+    basis = basis.astype(np.float64)
+    f = [basis[0]]
+    m = basis.shape[0]
+    n = basis.shape[1]
+    for i in range(1, m):
+        e_i = basis[i]
+        f_i = e_i
+        for f_j in f:
+            f_i += -(np.dot(e_i, f_j) / np.dot(f_j, f_j)) * f_j
+        f.append(f_i)
+    return np.array(f)
+
+
+def orthonormalize(basis):
+    basis = orthogonalize(basis)
+    for i in range(len(basis)):
+        basis[i] /= np.sqrt(np.dot(basis[i], basis[i]))
+    return basis
+
+
 A = np.array([[3, -1, -1, 1],
-      [1, 2, -1, -1]])
-print(ladder(A))
-print(find_basis_u(A))
+      [1, 2, -1, -1], np.zeros(4), np.zeros(4)])
+print(new_find_all_basis(A, 2))
+print(spec_with_multiple(A))
 
