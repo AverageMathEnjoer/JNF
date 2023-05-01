@@ -56,25 +56,50 @@ def new_find_all_basis(matrix: np.array, multiplicity: int) -> list:
     return basises
 
 
-def orthogonalize(basis: np.array) -> np.array:
+def orthogonalize(basis: np.array, flag=False) -> np.array:
     """ Gram-Shmidt orthogonalize without orthonormalize"""
     basis = basis.astype(np.float64)
+    tr = np.zeros((len(basis), len(basis)))
+    tr[0, 0] = 1
     f = [basis[0]]
     m = basis.shape[0]
     # Just the sum of the previous vectors with coefficients according to the formula
     for i in range(1, m):
         e_i = basis[i]
         f_i = e_i
-        for f_j in f:
-            f_i += -(np.dot(e_i, f_j) / np.dot(f_j, f_j)) * f_j
+        tr[i, i] = 1
+        for j in range(len(f)):
+            a = -(np.dot(e_i, f[j]) / np.dot(f[j], f[j]))
+            f_i += a * f[j]
+            tr[i] += a * tr[j]
         f.append(f_i)
+    if flag:
+        return np.array(f), tr.T
     return np.array(f)
 
 
-def orthonormalize(basis: np.array) -> np.array:
-    """ Orthonormalize without Gram-Shmidt orthogonalize"""
+def normalize(basis: np.array) -> np.array:
+    """ Normalize without Gram-Shmidt orthogonalize"""
     # Just divide by the length
     basis = basis.astype(np.float64)
     for i in range(len(basis)):
         basis[i] /= np.sqrt(np.dot(basis[i], basis[i]))
     return basis
+
+
+def ortonormalize(basis: np.array) -> np.array:
+    return normalize(orthogonalize(basis))
+
+
+def __mnk(basis: np.array, vector: np.array) -> np.array:
+    """ Method for finding a projection onto a subspace"""
+    basis, tr = orthogonalize(basis, True)
+    c = np.zeros(len(basis)).astype(np.float64)
+    for i in range(len(c)):
+        c[i] = np.dot(vector, basis[i]) / np.dot(basis[i], basis[i])
+    return np.dot(tr, c)
+
+
+def mnk(matrix: np.array, vector: np.array) -> np.array:
+    """ Wrapper method for least square method(ltsq)"""
+    return __mnk(matrix.T, vector)

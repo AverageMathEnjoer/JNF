@@ -108,3 +108,42 @@ def find_all_basis(matrix: np.array, multiplicity: int) -> NoReturn:
         print("Кол-во векторов(m - rk(B)):")
         print(len(B) - np.linalg.matrix_rank(B))
         print("Векторы:", find_basis_u(B))
+
+
+def __matrix_solving(matrix: np.array) -> np.array:
+    """ Solution of a system of equations by the Gauss method"""
+    matrix = ladder(matrix)
+    m = matrix.shape[0]
+    n = matrix.shape[1]
+    not_main = []
+    cur_line = 0
+    main = []
+    for i in range(n):
+        if cur_line >= m:
+            main += [j for j in range(i, n)]
+            break
+        if matrix[cur_line, i] != 0:
+            not_main.append((i, cur_line))
+            cur_line += 1
+        else:
+            main.append(i)
+    not_main.reverse()
+    v = np.zeros(n)
+    v[n - 1] = 1
+    return count_v(matrix, v, not_main)[0: n - 1]
+
+
+def solve_matrix(matrix: np.array, vector: np.array) -> np.array:
+    """ Wrapper method for matrix_solving"""
+    vector = vector.reshape((1, len(vector)))
+    n = matrix.shape[1]
+    new_matrix = np.append(matrix, -vector.T, axis=1)
+    if np.linalg.matrix_rank(matrix) == np.linalg.matrix_rank(new_matrix):
+        rk = np.linalg.matrix_rank(matrix)
+        if rk < n:
+            raise Exception("Endless fucking solutions")
+        else:
+            return __matrix_solving(new_matrix)
+    else:
+        raise Exception("Fuck you, there are no solutions")
+
