@@ -3,7 +3,7 @@ from GausFunction import *
 
 def spec_with_multiple(phi: np.array) -> list:
     """ The function of counting the degrees of numbers in spector"""
-    gammas, v = np.linalg.eigh(phi)
+    gammas, v = np.linalg.eig(phi)
     counter = 1
     spec = []
     cur = gammas[0]
@@ -103,3 +103,49 @@ def __mnk(basis: np.array, vector: np.array) -> np.array:
 def mnk(matrix: np.array, vector: np.array) -> np.array:
     """ Wrapper method for least square method(ltsq)"""
     return __mnk(matrix.T, vector)
+
+
+def magic_ladder(u, phi):
+    height = len(u)
+    u.reverse()
+    lad = list()
+    lad.append(u[0])
+    for i in range(1, len(u)):
+        floor = []
+        for j in range(0, len(u[i])):
+            if j < len(u[i-1]):
+                floor.append(np.dot(phi, lad[i-1][j]))
+            else:
+                k = 0
+                f = floor + [u[i][k]]
+                while not linear_independence(f):
+                    k += 1
+                    f = floor + [u[i][k]]
+                floor.append(u[i][k])
+        lad.append(floor)
+    return lad
+
+
+def transition_matrix(ladders, matrix):
+    S = np.zeros_like(matrix).astype(np.float64)
+    cur = 0
+    for k in range(len(ladders)):
+        u = ladders[k]
+        u.reverse()
+        for i in range(len(u[0])):
+            for j in range(len(u)):
+                if i < len(u[j]):
+                    S[cur] += u[j][i]
+                    cur += 1
+    return S.T
+
+
+def JNF(matrix):
+    spec = spec_with_multiple(matrix)
+    ladders = []
+    for i in spec:
+        phi = count_phi(matrix, i[0])
+        ladders.append(magic_ladder(new_find_all_basis(phi, i[1]), phi))
+    S = transition_matrix(ladders, matrix)
+    S_1 = np.linalg.inv(S)
+    return S, np.dot(np.dot(S_1, matrix), S)
