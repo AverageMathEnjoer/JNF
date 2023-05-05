@@ -106,11 +106,12 @@ def mnk(matrix: np.array, vector: np.array) -> np.array:
 
 
 def magic_ladder(u, phi):
+    """ Method for creation Лестница-Кудесница by Karpov"""
     height = len(u)
     u.reverse()
     lad = list()
     lad.append(u[0])
-    for i in range(1, len(u)):
+    for i in range(1, len(u)):                                     # Loop for all steps
         floor = []
         for j in range(0, len(u[i])):
             if j < len(u[i-1]):
@@ -127,6 +128,7 @@ def magic_ladder(u, phi):
 
 
 def transition_matrix(ladders, matrix):
+    """ Method for create transition matrix to JNF with the help of magic ladders"""
     S = np.zeros_like(matrix).astype(np.float64)
     cur = 0
     for k in range(len(ladders)):
@@ -141,6 +143,7 @@ def transition_matrix(ladders, matrix):
 
 
 def JNF(matrix):
+    """ Full method for JNF"""
     spec = spec_with_multiple(matrix)
     ladders = []
     for i in spec:
