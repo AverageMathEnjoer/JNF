@@ -37,8 +37,10 @@ def square_integral(f, a, b, eps):
 def trap_integral(f, a, b, eps):
     n = 16
     l, m, r = rec_square_integral(f, a, b, n)
+    t_ = (l + r) / 2
+    n *= 2
+    l, m, r = rec_square_integral(f, a, b, n)
     t = (l + r) / 2
-    t_ = 0
     while abs(t - t_) > eps:
         t_ = t
         n *= 2
@@ -49,3 +51,15 @@ def trap_integral(f, a, b, eps):
 
 def simp_integral(f, a, b, h):
     return sum([__simp_integral(f, i, i + h) for i in np.arange(a, b, h)])
+
+
+def eps_simp_integral(f, a, b, eps):
+    h = 1
+    i_ = simp_integral(f, a, b, h)
+    h /= 2
+    i = simp_integral(f, a, b, h)
+    while abs(i - i_) > eps:
+        i_ = i
+        h /= 2
+        i = simp_integral(f, a, b, h)
+    return i, h
