@@ -27,9 +27,12 @@ def rec_square_integral(f, a, b, n):
 
 def square_integral(f, a, b, eps):
     n = 16
+    l_, m_, r_ = rec_square_integral(f, a, b, n)
+    n *= 2
     l, m, r = rec_square_integral(f, a, b, n)
-    while abs(max(l, m, r) - min(l, m, r)) - eps > 0:
+    while abs(max(l, m, r) - max(l_, m_, r_)) + abs(min(l, m, r) - min(l_, m_, r_)) - eps > 0:
         n *= 2
+        l_, m_, r_ = l, m, r
         l, m, r = rec_square_integral(f, a, b, n)
     return min(l, m, r), (l, m, r), max(l, m, r), n
 
