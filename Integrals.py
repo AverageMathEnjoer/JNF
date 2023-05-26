@@ -31,7 +31,7 @@ def square_integral(f, a, b, eps):
     while abs(max(l, m, r) - min(l, m, r)) - eps > 0:
         n *= 2
         l, m, r = rec_square_integral(f, a, b, n)
-    return min(l, m, r), sum((l, m, r)) - max(l, m, r) - min(l, m, r), max(l, m, r), n
+    return min(l, m, r), (l, m, r), max(l, m, r), n
 
 
 def trap_integral(f, a, b, eps):
